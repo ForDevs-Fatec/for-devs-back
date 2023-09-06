@@ -1,9 +1,28 @@
 import { Request, Response } from "express";
 import { userRepository } from "../repositories/userRepository";
+import bcrypt from 'bcryptjs'
+import { UserService } from "../services/UserService";
+import { UserReadDto } from "../dtos/UserReadDto";
 
 export class UserController {
 
-     async create(req: Request, res: Response) {
+
+    async login(req: Request, res: Response) {
+        const { email, password } = req.body
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Dados de login incorretos ou incompletos" })
+        }
+
+        try {
+            const user = await userRepository.findOneBy({ email })
+
+        } catch (error) {
+            return res.status(400).json({ message: "Erro ao efetuar login" })
+        }
+    }
+
+    async create(req: Request, res: Response) {
 
         const { name, email, password, role } = req.body;
 
@@ -12,16 +31,23 @@ export class UserController {
         }
 
         try {
+            const userService = new UserService()
             const existingUser = await userRepository.findOneBy({ email });
 
             if (existingUser) {
                 return res.status(409).json({ message: "Usuário já existe!" });
             }
 
-            const newUser = userRepository.create({ name, email, password, role });
-            await userRepository.save(newUser);
+            const hashedPassword = await userService.EncodePassword(password)
 
-            return res.status(201).json(newUser);
+            const newUser = userRepository.create({ name, email, password: hashedPassword, role });
+            await userRepository.save(newUser)
+            return res.status(201).json({
+                id: newUser.id,
+                name: newUser.name,
+                role: newUser.role,
+                email: newUser.email
+            });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -40,7 +66,7 @@ export class UserController {
                 },
             });
 
-            return res.status(200).json(users); 
+            return res.status(200).json(users);
 
         } catch (error) {
             console.error(error);
@@ -77,21 +103,8 @@ export class UserController {
     async deleteUser(req: Request, res: Response) {
 
         try {
-            const { id } = req.body; 
-
-            if (!id) {
-                return res.status(400).json({ message: "ID do usuário é obrigatório" });
-            }
-
-            const existingUser = await userRepository.findOne(id);
-
-            if (!existingUser) {
-                return res.status(404).json({ message: "Usuário não encontrado" });
-            }
-
-            await userRepository.remove(existingUser); 
-
-            return res.status(204); 
+            const id = req.params.id;
+            return res.status(200).json(await userRepository.delete(id));
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Falha ao excluir usuário" });
