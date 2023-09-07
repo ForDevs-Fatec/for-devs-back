@@ -3,6 +3,7 @@ import { userRepository } from "../repositories/userRepository";
 import bcrypt from 'bcryptjs'
 import { UserService } from "../services/UserService";
 import { UserReadDto } from "../dtos/UserReadDto";
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 
 export class UserController {
 
@@ -15,7 +16,25 @@ export class UserController {
         }
 
         try {
+            const userService = new UserService()
             const user = await userRepository.findOneBy({ email })
+
+            if(!user){
+                return res.status(400).json({ message: "Dados de login incorretos ou incompletos" })
+            }
+
+            const validateUser = await userService.DecodePassword(password, user.password)
+            if(!validateUser) return res.status(400).json({message: "Dados de login incorretos ou incompletos"})
+
+            let tokenDto = {
+                id: user.id,
+                name: user.name,
+                role: user.role
+            }
+            const secret = process.env.TOKEN_SECRET as string
+            const token = jwt.sign(tokenDto, secret, {expiresIn: '1h'})
+
+            return res.status(200).json({token: token})
 
         } catch (error) {
             return res.status(400).json({ message: "Erro ao efetuar login" })
