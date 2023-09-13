@@ -96,19 +96,21 @@ export class UserController {
     async updateUser(req: Request, res: Response) {
 
         try {
-            const { id, role } = req.body;
+            const { id } = req.params
+            const { role, name } = req.body;
 
-            if (!id || !role) {
+            if (!id || role == null) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
 
-            const existingUser = await userRepository.findOne(id);
+            const existingUser = await userRepository.findOneBy({ id });
 
             if (!existingUser) {
                 return res.status(404).json({ message: "Usuário não encontrado" });
             }
 
             existingUser.role = role;
+            existingUser.name = name ?? existingUser.name;
 
             await userRepository.save(existingUser);
 
