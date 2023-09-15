@@ -15,7 +15,7 @@ export class User{
     @Column({ type: 'text'})
     password: string
 
-    @Column({ type: 'text'})
+    @Column({ type: 'int', default: 2})
     role: ERole
 
 }
