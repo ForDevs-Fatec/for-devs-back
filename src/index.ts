@@ -1,13 +1,26 @@
 import express from 'express';
 import { AppDataSource } from './data-source';
 import routes from './routes';
+import cors from 'cors';
 
 AppDataSource.initialize().then(() => {
-    const app = express();
+  const app = express();
 
-    app.use(express.json());
+  app.use(express.json());
 
-    app.use(routes)
+  app.use(
+    cors({
+        allowedHeaders: ["authorization", "Content-Type"],
+        exposedHeaders: ["authorization"],
+        origin: "*",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        preflightContinue: false    
+    })
+  );
 
-    return app.listen(process.env.PORT)
-})
+  app.use(routes);
+
+  return app.listen(process.env.PORT, () => {
+    console.log('🚀 HTTP Server started!');
+  })
+});
