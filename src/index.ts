@@ -13,7 +13,7 @@ AppDataSource.initialize().then(() => {
         allowedHeaders: ["authorization", "Content-Type"],
         exposedHeaders: ["authorization"],
         origin: "*",
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,CREATE,OPTIONS",
         preflightContinue: false    
     })
   );
