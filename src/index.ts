@@ -2,7 +2,9 @@ import express from 'express';
 import { AppDataSource } from './data-source';
 import routes from './routes';
 import cors from 'cors';
+import { AppDataSourceDados } from './data-source-dados';
 
+AppDataSourceDados.initialize();
 AppDataSource.initialize().then(() => {
   const app = express();
 
