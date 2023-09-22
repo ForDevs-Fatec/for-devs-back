@@ -45,7 +45,7 @@ export class UserController {
 
         const { name, email, password, role } = req.body;
 
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !password || role==null) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios" });
         }
 
