@@ -43,9 +43,9 @@ export class UserController {
 
     async create(req: Request, res: Response) {
 
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
-        if (!name || !email || !password || role==null) {
+        if (!name || !email || !password ) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios" });
         }
 
@@ -59,7 +59,7 @@ export class UserController {
 
             const hashedPassword = await userService.EncodePassword(password)
 
-            const newUser = userRepository.create({ name, email, password: hashedPassword, role });
+            const newUser = userRepository.create({ name, email, password: hashedPassword });
             await userRepository.save(newUser)
             return res.status(201).json({
                 id: newUser.id,
