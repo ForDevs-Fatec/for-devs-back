@@ -3,6 +3,8 @@ import { AppDataSource } from './data-source';
 import routes from './routes';
 import cors from 'cors';
 import { AppDataSourceDados } from './data-source-dados';
+import { connectToMongoDB1 } from './repositories/dados_processadosPepository';
+import { connectToMongoDB2 } from './repositories/dadosN_processadosRepository';
 
 AppDataSourceDados.initialize();
 AppDataSource.initialize().then(() => {
@@ -21,6 +23,9 @@ AppDataSource.initialize().then(() => {
   );
 
   app.use(routes);
+
+  connectToMongoDB1();
+  connectToMongoDB2();
 
   return app.listen(process.env.PORT, () => {
     console.log('🚀 HTTP Server started!');
