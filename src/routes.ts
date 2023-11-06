@@ -9,7 +9,7 @@ const router = Router();
 router.post('/user', new UserController().create);
 router.get('/users', new UserController().ListUser);
 router.put('/user/:id', authMiddleware, new UserController().updateUser);
-router.delete('/user/:id', authMiddleware, new UserController().deleteUser);
+router.delete('/user/:id', new UserController().deleteUser);
 router.post('/user/login', new UserController().login);
 
 router.get('/reviews/search', new DadosController().searchReviews);
